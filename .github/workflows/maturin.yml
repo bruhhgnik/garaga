@@ -50,15 +50,21 @@ jobs:
 
           async def verify_sepolia():
               print('Checking Sepolia...')
-              sepolia = FullNodeClient('https://alpha-sepolia.starknet.io')
+              base_url = 'https://alpha-sepolia.starknet.io'
+              sepolia = FullNodeClient(f'{base_url}/feeder_gateway')
               try:
+                  print(f'Debug - Using URL: {sepolia._client.url}')
+                  print(f'Debug - Checking class hash: {class_hash}')
+                  print(f'Debug - Making API request...')
                   sepolia_result = await sepolia.get_class_by_hash(class_hash)
+                  print(f'Debug - Got response: {sepolia_result}')
+                  
                   if not sepolia_result:
                       print('Error: Contract not declared on Sepolia', file=sys.stderr)
                       sys.exit(1)
                   print('✓ Contract found on Sepolia')
               except Exception as e:
-                  print(f'Error checking Sepolia: {str(e)}', file=sys.stderr)
+                  print(f'Debug - Request failed: {str(e)}', file=sys.stderr)
                   sys.exit(1)
               
           asyncio.run(verify_sepolia())
