@@ -50,7 +50,7 @@ jobs:
 
           async def verify_sepolia():
               print('Checking Sepolia...')
-              sepolia = FullNodeClient('https://alpha-sepolia.starknet.io/gateway')
+              sepolia = FullNodeClient('https://alpha-sepolia.starknet.io')
               try:
                   sepolia_result = await sepolia.get_class_by_hash(class_hash)
                   if not sepolia_result:
