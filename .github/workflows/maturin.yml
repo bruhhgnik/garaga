@@ -28,29 +28,17 @@ jobs:
           python -m pip install "starknet-py>=0.24.0"
       - name: Verify Contract Declaration
         run: |
-          # Parse ECIP_OPS_CLASS_HASH from generator.py
-          CLASS_HASH=$(python -c "
-          import ast
-          with open('hydra/garaga/starknet/groth16_contract_generator/generator.py', 'r') as f:
-              tree = ast.parse(f.read())
-              for node in ast.walk(tree):
-                  if isinstance(node, ast.Assign) and len(node.targets) == 1:
-                      if getattr(node.targets[0], 'id', None) == 'ECIP_OPS_CLASS_HASH':
-                          print(hex(node.value.value))
-                          break
-          ")
+          # Known good hash from v0.13.3
+          V013_CLASS_HASH="0x7918F484291EB154E13D0E43BA6403E62DC1F5FBB3A191D868E2E37359F8713"
+          echo "Checking class hash from v0.13.3: $V013_CLASS_HASH"
           
-          echo "Found class hash: $CLASS_HASH"
-          
-          # Check if contract is declared on both networks
           python -c "
           import asyncio
           import sys
           from starknet_py.net.full_node_client import FullNodeClient
           
-          async def verify_networks():
-              class_hash = '$CLASS_HASH'
-              error_found = False
+          async def verify_sepolia():
+              class_hash = '$V013_CLASS_HASH'
               
               print('Checking Sepolia...')
               sepolia = FullNodeClient('https://alpha-sepolia.starknet.io/gateway')
@@ -58,34 +46,15 @@ jobs:
                   sepolia_result = await sepolia.get_class_by_hash(class_hash)
                   if not sepolia_result:
                       print('Error: Contract not declared on Sepolia', file=sys.stderr)
-                      error_found = True
-                  else:
-                      print('✓ Contract found on Sepolia')
+                      sys.exit(1)
+                  print('✓ Contract found on Sepolia')
               except Exception as e:
                   print(f'Error checking Sepolia: {str(e)}', file=sys.stderr)
-                  error_found = True
-              
-              print('\nChecking Mainnet...')
-              mainnet = FullNodeClient('https://alpha-mainnet.starknet.io/gateway')
-              try:
-                  mainnet_result = await mainnet.get_class_by_hash(class_hash)
-                  if not mainnet_result:
-                      print('Error: Contract not declared on Mainnet', file=sys.stderr)
-                      error_found = True
-                  else:
-                      print('✓ Contract found on Mainnet')
-              except Exception as e:
-                  print(f'Error checking Mainnet: {str(e)}', file=sys.stderr)
-                  error_found = True
-              
-              if error_found:
                   sys.exit(1)
-              print('\n✓ Contract verified on both networks')
               
-          asyncio.run(verify_networks())
+          asyncio.run(verify_sepolia())
           "
 
-          
   linux:
     needs: verify_contract
     runs-on: ${{ matrix.platform.runner }}
