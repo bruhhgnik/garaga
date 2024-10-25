@@ -38,11 +38,14 @@ jobs:
           try:
               with open('hydra/garaga/starknet/groth16_contract_generator/generator.py', 'r') as f:
                   tree = ast.parse(f.read())
+                  class_hash = None
                   for node in ast.walk(tree):
                       if isinstance(node, ast.Assign) and len(node.targets) == 1:
                           if getattr(node.targets[0], 'id', None) == 'ECIP_OPS_CLASS_HASH':
                               class_hash = hex(node.value.value)
                               break
+              if class_hash is None:
+                  raise ValueError('ECIP_OPS_CLASS_HASH not found in generator.py')
               print(f'Found class hash: {class_hash}')
           except Exception as e:
               print(f'Error parsing generator.py: {str(e)}', file=sys.stderr)
@@ -50,7 +53,7 @@ jobs:
 
           async def verify_sepolia():
               print('Checking Sepolia...')
-              base_url = 'https://alpha-sepolia.starknet.io'
+              base_url = 'https://alpha4.starknet.io'
               sepolia = FullNodeClient(f'{base_url}/feeder_gateway')
               try:
                   print(f'Debug - Using URL: {sepolia._client.url}')
@@ -69,6 +72,7 @@ jobs:
               
           asyncio.run(verify_sepolia())
           "
+
 
   linux:
     needs: verify_contract
