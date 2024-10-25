@@ -19,8 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: 'v0.13.3'  # Checkout v0.13.3 tag specifically
+      - name: Fetch all tags
+        run: |
+          git fetch --tags origin
+          git checkout v0.13.3
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
