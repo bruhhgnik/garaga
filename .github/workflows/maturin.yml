@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-verify_contract:
+  verify_contract:
     name: Verify Contract Declaration
     runs-on: ubuntu-latest
     steps:
@@ -80,7 +80,7 @@ verify_contract:
               
           asyncio.run(verify_networks())
           "
-
+          
   linux:
     needs: verify_contract
     runs-on: ubuntu-latest
