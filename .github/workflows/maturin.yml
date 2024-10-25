@@ -57,8 +57,7 @@ jobs:
           import asyncio
           import sys
           from starknet_py.net.client import Client
-          from starknet_py.net.networks import SEPOLIA, MAINNET
-          from starknet_py.net.http_client import HttpClient
+          from starknet_py.net.models import StarknetChainId
           
           async def verify_networks():
               try:
@@ -66,12 +65,12 @@ jobs:
                   print('Starting verification...')
                   
                   print('Checking Sepolia...')
-                  sepolia = Client(node_url=SEPOLIA.feeder_gateway_url, chain=SEPOLIA.chain_id)
+                  sepolia = Client(node_url='https://alpha-sepolia.starknet.io', chain=StarknetChainId.SEPOLIA)
                   sepolia_result = await sepolia.get_class_by_hash(class_hash)
                   print(f'Sepolia result: {sepolia_result is not None}')
                   
                   print('Checking Mainnet...')
-                  mainnet = Client(node_url=MAINNET.feeder_gateway_url, chain=MAINNET.chain_id)
+                  mainnet = Client(node_url='https://alpha-mainnet.starknet.io', chain=StarknetChainId.MAINNET)
                   mainnet_result = await mainnet.get_class_by_hash(class_hash)
                   print(f'Mainnet result: {mainnet_result is not None}')
                   
@@ -88,6 +87,8 @@ jobs:
               
           asyncio.run(verify_networks())
           "
+
+  # [Rest of the jobs remain the same...]
 
 
   linux:
