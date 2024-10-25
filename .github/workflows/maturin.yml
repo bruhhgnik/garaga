@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: 'v0.13.3'  # Checkout v0.13.3 tag specifically
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
@@ -28,18 +30,27 @@ jobs:
           python -m pip install "starknet-py>=0.24.0"
       - name: Verify Contract Declaration
         run: |
-          # Known good hash from v0.13.3
-          ECIP_OPS_CLASS_HASH ="0x7918F484291EB154E13D0E43BA6403E62DC1F5FBB3A191D868E2E37359F8713"
-          echo "Checking class hash from v0.13.3: $ECIP_OPS_CLASS_HASH"
-          
           python -c "
           import asyncio
           import sys
+          import ast
           from starknet_py.net.full_node_client import FullNodeClient
-          
+
+          # Parse hash from generator.py
+          try:
+              with open('hydra/garaga/starknet/groth16_contract_generator/generator.py', 'r') as f:
+                  tree = ast.parse(f.read())
+                  for node in ast.walk(tree):
+                      if isinstance(node, ast.Assign) and len(node.targets) == 1:
+                          if getattr(node.targets[0], 'id', None) == 'ECIP_OPS_CLASS_HASH':
+                              class_hash = hex(node.value.value)
+                              break
+              print(f'Found class hash: {class_hash}')
+          except Exception as e:
+              print(f'Error parsing generator.py: {str(e)}', file=sys.stderr)
+              sys.exit(1)
+
           async def verify_sepolia():
-              class_hash = '$ECIP_OPS_CLASS_HASH'
-              
               print('Checking Sepolia...')
               sepolia = FullNodeClient('https://alpha-sepolia.starknet.io/gateway')
               try:
