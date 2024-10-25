@@ -58,6 +58,7 @@ jobs:
           import sys
           from starknet_py.net.client import Client
           from starknet_py.net.networks import SEPOLIA, MAINNET
+          from starknet_py.net.http_client import HttpClient
           
           async def verify_networks():
               try:
@@ -65,12 +66,12 @@ jobs:
                   print('Starting verification...')
                   
                   print('Checking Sepolia...')
-                  sepolia = Client(SEPOLIA)
+                  sepolia = Client(node_url=SEPOLIA.feeder_gateway_url, chain=SEPOLIA.chain_id)
                   sepolia_result = await sepolia.get_class_by_hash(class_hash)
                   print(f'Sepolia result: {sepolia_result is not None}')
                   
                   print('Checking Mainnet...')
-                  mainnet = Client(MAINNET)
+                  mainnet = Client(node_url=MAINNET.feeder_gateway_url, chain=MAINNET.chain_id)
                   mainnet_result = await mainnet.get_class_by_hash(class_hash)
                   print(f'Mainnet result: {mainnet_result is not None}')
                   
