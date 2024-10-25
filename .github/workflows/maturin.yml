@@ -30,7 +30,7 @@ jobs:
         run: |
           ECIP_CLASS_HASH=$(python -c "
           import ast
-          with open('garaga/hydra/garaga/starknet/groth16_contract_generator/generator.py', 'r') as f:
+          with open('hydra/garaga/starknet/groth16_contract_generator/generator.py', 'r') as f:
               tree = ast.parse(f.read())
               for node in ast.walk(tree):
                   if isinstance(node, ast.Assign) and len(node.targets) == 1:
