@@ -65,14 +65,22 @@ jobs:
                   print('Starting verification...')
                   
                   print('Checking Sepolia...')
-                  sepolia_client = FullNodeClient('https://alpha-sepolia.starknet.io/feeder_gateway')
-                  sepolia_result = await sepolia_client.get_class_by_hash(class_hash)
-                  print(f'Sepolia result: {sepolia_result is not None}')
+                  sepolia_client = FullNodeClient('https://alpha-sepolia.starknet.io/gateway')
+                  try:
+                      sepolia_result = await sepolia_client.get_class_by_hash(class_hash)
+                      print(f'Sepolia result: {sepolia_result is not None}')
+                  except Exception as e:
+                      print(f'Error checking Sepolia: {str(e)}')
+                      sepolia_result = None
                   
                   print('Checking Mainnet...')
-                  mainnet_client = FullNodeClient('https://alpha-mainnet.starknet.io/feeder_gateway')
-                  mainnet_result = await mainnet_client.get_class_by_hash(class_hash)
-                  print(f'Mainnet result: {mainnet_result is not None}')
+                  mainnet_client = FullNodeClient('https://alpha-mainnet.starknet.io/gateway')
+                  try:
+                      mainnet_result = await mainnet_client.get_class_by_hash(class_hash)
+                      print(f'Mainnet result: {mainnet_result is not None}')
+                  except Exception as e:
+                      print(f'Error checking Mainnet: {str(e)}')
+                      mainnet_result = None
                   
                   if not sepolia_result:
                       raise Exception(f'Contract not declared on Sepolia')
