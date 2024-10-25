@@ -21,13 +21,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'  # Use Python 3.9 specifically
+          python-version: '3.9'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "starknet-py>=0.24.0"  # Use latest version
+          python -m pip install "starknet-py>=0.24.0"
           # Verify installation
-          python -c "from starknet_py.net.gateway_client import GatewayClient; print('Starknet-py installed successfully')"
+          python -c "from starknet_py.net.client import Client; print('Starknet-py installed successfully')"
       - name: Verify Contract Declaration
         run: |
           FILE_PATH="hydra/garaga/starknet/groth16_contract_generator/generator.py"
@@ -56,7 +56,7 @@ jobs:
           python -c "
           import asyncio
           import sys
-          from starknet_py.net.gateway_client import GatewayClient
+          from starknet_py.net.client import Client
           from starknet_py.net.networks import SEPOLIA, MAINNET
           
           async def verify_networks():
@@ -65,12 +65,12 @@ jobs:
                   print('Starting verification...')
                   
                   print('Checking Sepolia...')
-                  sepolia = GatewayClient(SEPOLIA)
+                  sepolia = Client(SEPOLIA)
                   sepolia_result = await sepolia.get_class_by_hash(class_hash)
                   print(f'Sepolia result: {sepolia_result is not None}')
                   
                   print('Checking Mainnet...')
-                  mainnet = GatewayClient(MAINNET)
+                  mainnet = Client(MAINNET)
                   mainnet_result = await mainnet.get_class_by_hash(class_hash)
                   print(f'Mainnet result: {mainnet_result is not None}')
                   
@@ -87,6 +87,7 @@ jobs:
               
           asyncio.run(verify_networks())
           "
+
 
   linux:
     needs: verify_contract
