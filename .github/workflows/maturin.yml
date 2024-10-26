@@ -53,8 +53,8 @@ jobs:
 
           async def verify_sepolia():
               print('Checking Sepolia...')
-              base_url = 'https://alpha-sepolia.starknet.io'
-              sepolia = FullNodeClient(f'{base_url}/gateway')
+              base_url = 'https://free-rpc.nethermind.io/sepolia-juno'
+              sepolia = FullNodeClient(base_url)
               try:
                   print(f'Debug - Using URL: {sepolia._client.url}')
                   print(f'Debug - Checking class hash: {class_hash}')
