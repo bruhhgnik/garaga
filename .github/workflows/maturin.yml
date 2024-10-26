@@ -54,7 +54,7 @@ jobs:
           async def verify_sepolia():
               print('Checking Sepolia...')
               base_url = 'https://alpha4.starknet.io'
-              sepolia = FullNodeClient(f'{base_url}/feeder_gateway')
+              sepolia = FullNodeClient(f'{base_url}/gateway')
               try:
                   print(f'Debug - Using URL: {sepolia._client.url}')
                   print(f'Debug - Checking class hash: {class_hash}')
