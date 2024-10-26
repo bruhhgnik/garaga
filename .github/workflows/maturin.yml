@@ -53,7 +53,7 @@ jobs:
 
           async def verify_sepolia():
               print('Checking Sepolia...')
-              base_url = 'https://alpha4.starknet.io'
+              base_url = 'https://alpha-sepolia.starknet.io'
               sepolia = FullNodeClient(f'{base_url}/gateway')
               try:
                   print(f'Debug - Using URL: {sepolia._client.url}')
@@ -72,7 +72,7 @@ jobs:
               
           asyncio.run(verify_sepolia())
           "
-
+                
 
   linux:
     needs: verify_contract
